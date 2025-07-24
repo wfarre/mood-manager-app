@@ -1,0 +1,32 @@
+body {
+	background-color: #e0e6fa;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+	list-style-type: none;
+}
+
+:root {
+	--color-blue-100: #e0e6fa;
+	--color-blue-200: #c7d3f7;
+	--color-blue-300: #89caff;
+	--color-blue-600: #4865db;
+	--color-blue-700: #2a4cd5;
+
+	--color-red-200: #ff9b99;
+	--color-red-700: #e60013;
+
+	--color-neutral-0: #ffffff;
+	--color-neutral-200: #cbcdd0;
+	--color-neutral-300: #9393b7;
+	--color-neutral-600: #57577b;
+	--color-neutral-900: #21214d;
+
+	--color-indigo-200: #b8b1ff;
+	--color-green-300: #89e780;
+	--color-amber-300: #ffc97c;
+}
