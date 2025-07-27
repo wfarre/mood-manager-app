@@ -1,35 +1,34 @@
 <script lang="ts">
+	let { data }: PageProps = $props();
+
 	import CardMood from '../components/ui/CardMood.svelte';
 	import Navbar from '../components/layout/Navbar.svelte';
 	import CardSleep from '../components/ui/CardSleep.svelte';
 	import CardReflection from '../components/ui/CardReflection.svelte';
 	import CardAverage from '../components/ui/CardAverage.svelte';
 	import CardGraph from '../components/ui/CardGraph.svelte';
-	import { onMount } from 'svelte';
 	import type { Mood, MoodApi } from '$lib/models/Mood';
 	import { MoodFactory } from '$lib/factories/MoodFactory';
 	import FormModal from '../components/layout/FormModal.svelte';
 	import Button from '../components/ui/Button.svelte';
+	import type { PageProps } from './$types';
 
 	let mood: null | Mood[] = $state(null);
 	let moodQuotes = $state([]);
 	let isFormModalOpen = $state(false);
-
-	onMount(async () => {
-		await fetch('/data/data.json')
-			.then((res) => res.json())
-			.then((fetchedData) => {
-				mood = fetchedData.moodEntries.map((m: MoodApi) => new MoodFactory(m, 'json'));
-				moodQuotes = fetchedData.moodQuotes;
-				console.log(fetchedData);
-			})
-			.catch((err) => console.log(err));
-	});
-
 	let todayMood: undefined | null | Mood = $state(null);
 
+	console.log(data);
+
 	$effect(() => {
-		todayMood = mood?.[mood?.length - 1];
+		if (data) {
+			mood = data.moodEntries?.map((m: MoodApi) => new MoodFactory(m, 'api'));
+			moodQuotes = data.moodQuotes;
+		}
+	});
+
+	$effect(() => {
+		todayMood = mood ? mood?.[mood?.length - 1] : null;
 	});
 
 	const handleOpenModal = () => {

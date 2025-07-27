@@ -6,7 +6,8 @@
 	import TagItem from '../ui/TagItem.svelte';
 	import Button from '../ui/Button.svelte';
 	import ListView from './ListView.svelte';
-	import { Mood } from '$lib/models/Mood';
+	import { feelingsList, moodsSelection } from '$lib/constants';
+	import { sleepHours } from '$lib/constants';
 
 	let currentStep = $state(0);
 
@@ -34,85 +35,6 @@
 	const handleJournalEntryChange = (e: Event) => {
 		formInput.journalEntry = (e.target as HTMLInputElement).value;
 	};
-
-	const moodsSelection = [
-		{
-			text: 'Very Happy',
-			value: 2,
-			id: 'very-happy'
-		},
-		{
-			text: 'Happy',
-			value: 1,
-			id: 'happy'
-		},
-		{
-			text: 'Neutral',
-			value: 0,
-			id: 'neutral'
-		},
-		{
-			text: 'Sad',
-			value: -1,
-			id: 'sad'
-		},
-		{
-			text: 'Very Sad',
-			value: -2,
-			id: 'very-sad'
-		}
-	];
-
-	const sleepHours = [
-		{
-			text: '0-2 hours',
-			value: 1,
-			id: '0-2-hours'
-		},
-		{
-			text: '3-4 hours',
-			value: 3,
-			id: '3-4-hours'
-		},
-		{
-			text: '5-6 hours',
-			value: 5,
-			id: '5-6-hours'
-		},
-		{
-			text: '7-8 hours',
-			value: 7,
-			id: '7-8-hours'
-		},
-		{
-			text: '9+ hours',
-			value: 9,
-			id: '9+-hours'
-		}
-	];
-
-	const feelingsList = [
-		'Joyful',
-		'Down',
-		'Anxious',
-		'Calm',
-		'Excited',
-		'Frustrated',
-		'Lonely',
-		'Grateful',
-		'Overwhelmed',
-		'Motivated',
-		'Irritable',
-		'Peaceful',
-		'Tired',
-		'Hopeful',
-		'Confident',
-		'Stressed',
-		'Content',
-		'Disappointed',
-		'Optimistic',
-		'Restless'
-	];
 </script>
 
 <div class="modal-wrapper">
@@ -164,7 +86,7 @@
 		value={item.value}
 		text={item.text}
 		name="mood"
-		handleChange={handleSleepHoursChange}
+		handleChange={handleMoodChange}
 	/>
 {/snippet}
 

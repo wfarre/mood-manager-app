@@ -2,13 +2,13 @@ import { moodRank, moodSvg, moodSvgColor } from '$lib/constants';
 import { getMoodColor, getSleepHoursRange } from '$lib/utils';
 
 export class Mood {
-	private _createdAt: string;
-	private _mood: number;
-	private _feelings: string[];
-	private _journalEntry: string;
-	private _sleepHours: number;
+	protected _createdAt: string;
+	protected _mood: number;
+	protected _feelings: string[];
+	protected _journalEntry: string;
+	protected _sleepHours: number;
 
-	constructor(data: MoodApi) {
+	constructor(data: MoodJson) {
 		this._createdAt = data.createdAt;
 		this._mood = data.mood;
 		this._feelings = data.feelings;
@@ -62,10 +62,18 @@ export class Mood {
 	}
 }
 
-export interface MoodApi {
+export interface MoodJson {
 	createdAt: string;
 	mood: number;
 	feelings: string[];
 	journalEntry: string;
 	sleepHours: number;
+}
+
+export interface MoodApi {
+	created_at: string;
+	mood: number;
+	feelings: string[];
+	journal_entry: string;
+	sleep_hours: number;
 }

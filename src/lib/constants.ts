@@ -32,3 +32,82 @@ export const moodSvgColor: Record<string, string> = {
 	'1': happyColor,
 	'2': veryHappyColor
 };
+
+export const moodsSelection = [
+	{
+		text: 'Very Happy',
+		value: 2,
+		id: 'very-happy'
+	},
+	{
+		text: 'Happy',
+		value: 1,
+		id: 'happy'
+	},
+	{
+		text: 'Neutral',
+		value: 0,
+		id: 'neutral'
+	},
+	{
+		text: 'Sad',
+		value: -1,
+		id: 'sad'
+	},
+	{
+		text: 'Very Sad',
+		value: -2,
+		id: 'very-sad'
+	}
+];
+
+export const sleepHours = [
+	{
+		text: '0-2 hours',
+		value: 1,
+		id: '0-2-hours'
+	},
+	{
+		text: '3-4 hours',
+		value: 3,
+		id: '3-4-hours'
+	},
+	{
+		text: '5-6 hours',
+		value: 5,
+		id: '5-6-hours'
+	},
+	{
+		text: '7-8 hours',
+		value: 7,
+		id: '7-8-hours'
+	},
+	{
+		text: '9+ hours',
+		value: 9,
+		id: '9+-hours'
+	}
+];
+
+export const feelingsList = [
+	'Joyful',
+	'Down',
+	'Anxious',
+	'Calm',
+	'Excited',
+	'Frustrated',
+	'Lonely',
+	'Grateful',
+	'Overwhelmed',
+	'Motivated',
+	'Irritable',
+	'Peaceful',
+	'Tired',
+	'Hopeful',
+	'Confident',
+	'Stressed',
+	'Content',
+	'Disappointed',
+	'Optimistic',
+	'Restless'
+];
