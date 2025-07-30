@@ -1,14 +1,17 @@
 <script lang="ts">
+	import type { ChangeEventHandler } from 'svelte/elements';
+
 	interface Props {
 		tag: string;
 		name: string;
+		onchange: ChangeEventHandler<HTMLInputElement>;
 	}
 
-	let { tag, name }: Props = $props();
+	let { tag, name, onchange }: Props = $props();
 </script>
 
 <label class="tag-item" for={tag}>
-	<input class="tag-item__input" type="checkbox" {name} id={tag} value={tag} />
+	<input class="tag-item__input" type="checkbox" {name} id={tag} value={tag} {onchange} />
 	{tag}
 </label>
 

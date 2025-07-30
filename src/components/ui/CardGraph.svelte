@@ -62,12 +62,12 @@
 		chartInstance = new Chart(ctx, {
 			type: 'bar',
 			data: {
-				labels: moodDates,
+				labels: moodDates.reverse(),
 				datasets: [
 					{
-						data: sleepScores,
+						data: sleepScores.reverse(),
 						borderWidth: 1,
-						backgroundColor: moodColors,
+						backgroundColor: moodColors.reverse(),
 						borderRadius: {
 							topLeft: 20,
 							topRight: 20,
@@ -99,13 +99,14 @@
 
 		// Process data
 		(async () => {
-			const moodColors = moodsList.map((m) => m.moodColor);
-			const sleepScores = moodsList.map((m) => m.sleepHours);
-			const moodDates = moodsList.map((m) => {
+			const truncatedMoodsList = moodsList.slice(-10);
+			const moodColors = truncatedMoodsList.map((m) => m.moodColor);
+			const sleepScores = truncatedMoodsList.map((m) => m.sleepHours);
+			const moodDates = truncatedMoodsList.map((m) => {
 				const date = new Date(m.createdAt);
 				return date.getMonth() + 1 + '/' + date.getDate();
 			});
-			const moodIcons = moodsList.map((m) => m.moodEmojiWhite);
+			const moodIcons = truncatedMoodsList.map((m) => m.moodEmojiWhite);
 			loadedImages = await loadImages(moodIcons);
 			createChart(sleepScores, moodDates, moodColors);
 		})();

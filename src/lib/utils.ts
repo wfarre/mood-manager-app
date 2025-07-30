@@ -1,3 +1,5 @@
+import type { Mood } from './models/Mood';
+
 export const getSleepHoursRange = (sleepHours: number): string => {
 	if (sleepHours < 2) {
 		return '0-2';
@@ -26,7 +28,6 @@ export const getMoodColor = (mood: number): string => {
 			return '#ff9b99';
 		default:
 			return '#c7d3f7';
-			break;
 	}
 };
 
@@ -40,3 +41,20 @@ export const generateCurrentQuote = (
 	}
 	return '';
 };
+
+export const checkIfLengthIsValid = (
+	value: string | string[] | null,
+	min: number | undefined,
+	max: number | undefined
+) => {
+	if (!value) return false;
+	if (min && value.length < min) return false;
+	if (max && value.length > max) return false;
+	return true;
+};
+
+export const getAverageMood = (moodsList: Mood[]): number =>
+	Math.floor(moodsList.reduce((acc, mood) => acc + mood.mood, 0) / moodsList.length);
+
+export const getAverageSleep = (moodsList: Mood[]): number =>
+	moodsList.reduce((acc, mood) => acc + mood.sleepHours, 0) / moodsList.length;

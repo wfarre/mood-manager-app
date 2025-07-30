@@ -9,8 +9,5 @@ export class MoodAdapter extends Mood {
 			journalEntry: data.journal_entry,
 			sleepHours: data.sleep_hours
 		});
-		// this._createdAt = data.created_at;
-		// this._journalEntry = data.journal_entry;
-		// this._sleepHours = data.sleep_hours;
 	}
 }

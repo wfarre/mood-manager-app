@@ -20,15 +20,32 @@
 
 	console.log(data);
 
+	// const currenteDate = new Date('2025-04-15T11:00:00Z');
+	const currenteDate = new Date();
+
+	const formattedCurrentDate = currenteDate.toLocaleDateString('en-US', {
+		weekday: 'long',
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	});
+
+	console.log(formattedCurrentDate);
+
+	const dateWithoutTime = (date: Date): string => date.toISOString().split('T')[0];
+
 	$effect(() => {
 		if (data) {
+			// mood = data.moodEntries?.map((m: MoodApi) => new MoodFactory(m, 'json'));
 			mood = data.moodEntries?.map((m: MoodApi) => new MoodFactory(m, 'api'));
 			moodQuotes = data.moodQuotes;
 		}
 	});
 
 	$effect(() => {
-		todayMood = mood ? mood?.[mood?.length - 1] : null;
+		todayMood = mood?.find(
+			(m) => dateWithoutTime(new Date(m.createdAt)) === dateWithoutTime(currenteDate)
+		);
 	});
 
 	const handleOpenModal = () => {
@@ -37,7 +54,7 @@
 </script>
 
 {#if isFormModalOpen}
-	<FormModal />
+	<FormModal bind:isFormModalOpen />
 {/if}
 
 <div class="container">
@@ -47,21 +64,25 @@
 	<header class="header">
 		<p class="greetings">Hello, Lisa!</p>
 		<h1 class="title">How are you feeling today?</h1>
-		<p class="date">Wednesday, April 16th, 2025</p>
+		<p class="date">{formattedCurrentDate}</p>
+		<!-- <p class="date">Wednesday, April 16th, 2025</p> -->
 
-		<Button onclick={handleOpenModal}>Log today's Mood</Button>
+		{#if !todayMood}
+			<Button onclick={handleOpenModal}>Log today's Mood</Button>
+		{/if}
 	</header>
-
 	<main>
 		<section>
-			<div class="grid">
-				<CardMood
-					moodQuote={todayMood?.getMoodQuote(moodQuotes)}
-					moodIcon={todayMood?.moodEmojiColor}
-					moodString={todayMood?.moodString}
-				/>
-				<CardSleep sleepHours={todayMood?.sleepHours} />
-				<CardReflection reflection={todayMood?.journalEntry} tags={todayMood?.feelings} />
+			<div class={`grid  ${todayMood ? '' : 'grid--no-mood'}`}>
+				{#if todayMood}
+					<CardMood
+						moodQuote={todayMood?.getMoodQuote(moodQuotes)}
+						moodIcon={todayMood?.moodEmojiColor}
+						moodString={todayMood?.moodString}
+					/>
+					<CardSleep sleepHours={todayMood?.sleepHours} />
+					<CardReflection reflection={todayMood?.journalEntry} tags={todayMood?.feelings} />
+				{/if}
 				<CardAverage moodsList={mood} />
 				<CardGraph moodsList={mood} />
 			</div>
@@ -127,6 +148,10 @@
 		width: 100%;
 	}
 
+	.grid--no-mood {
+		grid-template-rows: 0px 0px 0px 0px 453px;
+	}
+
 	:global(.card__header) {
 		display: flex;
 		gap: 12px;
@@ -148,8 +173,8 @@
 		font-weight: 400;
 	}
 
-	.header .btn {
-		margin-top: 64px;
+	.header .date {
+		margin-bottom: 64px;
 	}
 
 	.mood-list {

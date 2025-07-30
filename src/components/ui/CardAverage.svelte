@@ -1,37 +1,27 @@
 <script lang="ts">
 	import { moodRank } from '$lib/constants';
 	import type { Mood } from '$lib/models/Mood';
-	import { getSleepHoursRange } from '$lib/utils';
+	import { getAverageMood, getAverageSleep, getSleepHoursRange } from '$lib/utils';
 
-	const sleepIcon = '/images/icon-sleep.svg';
-	const decoImg = '/images/bg-pattern-averages.svg';
 	interface Props {
 		moodsList: null | Mood[];
 	}
 
-	let { moodsList }: Props = $props();
+	const sleepIcon = '/images/icon-sleep.svg';
+	const decoImg = '/images/bg-pattern-averages.svg';
 
+	let { moodsList }: Props = $props();
 	let averageMood = $state(0);
 	let averageSleep = $state(0);
-
 	let averageMoodText = $derived(moodRank[String(averageMood)]);
 	let averageSleepRange = $derived(getSleepHoursRange(averageSleep));
 
-	const getAverageMood = (moodsList: Mood[]): number =>
-		Math.floor(moodsList.reduce((acc, mood) => acc + mood.mood, 0) / moodsList.length);
-	const getAverageSleep = (moodsList: Mood[]): number =>
-		moodsList.reduce((acc, mood) => acc + mood.sleepHours, 0) / moodsList.length;
-
 	$effect(() => {
-		console.log(moodsList);
 		if (moodsList) {
 			const lastFiveEntries = moodsList.slice(-5);
-			console.log(lastFiveEntries);
 			averageMood = getAverageMood(lastFiveEntries);
 			averageSleep = getAverageSleep(lastFiveEntries);
 		}
-
-		console.log(averageMood);
 	});
 </script>
 

@@ -1,8 +1,18 @@
 <script lang="ts">
-	let { children, onclick } = $props();
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		children: Snippet;
+		onclick?: () => void;
+		type?: 'button' | 'submit' | 'reset';
+		form?: string;
+		disabled?: boolean;
+	}
+
+	let { children, onclick, type = 'button', form, disabled = false }: Props = $props();
 </script>
 
-<button class="btn" {onclick}>{@render children()}</button>
+<button {disabled} {form} {type} class="btn" {onclick}>{@render children()}</button>
 
 <style>
 	@import '../../style.css';
