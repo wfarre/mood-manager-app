@@ -1,4 +1,9 @@
-export const load = async ({ fetch }) => {
+import { error, redirect } from '@sveltejs/kit';
+
+export const load = async ({ fetch, cookies }) => {
+	if (!cookies.get('moodTrackerToken')) {
+		redirect(307, '/login');
+	}
 	const fetchData = async () => {
 		return await fetch('/data/data.json')
 			.then((res) => res.json())
@@ -57,5 +62,43 @@ export const actions = {
 				console.log(fetchedData);
 			})
 			.catch((err) => console.log(err));
+	},
+
+	logout: async ({ cookies }) => {
+		try {
+			const response = await fetch('http://localhost:8000/api/logout', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json',
+					Authorization: `Bearer ${cookies.get('moodTrackerToken')}`
+				}
+			});
+
+			console.log(response);
+
+			if (response.ok) {
+				const data = await response.json();
+				cookies.set('moodTrackerToken', data.token, {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'strict'
+				});
+				cookies.delete('moodTrackerToken', { path: '/' });
+			} else {
+				const json = await response.json();
+				throw error(response.status, json.message);
+			}
+		} catch (err) {
+			console.log(err);
+
+			if ((err as { status: number; body: { message: string } }).status) {
+				error((err as { status: number; message: string }).status, {
+					message: (err as { status: number; body: { message: string } }).body.message
+				});
+			} else {
+				error(500, 'Something went wrong');
+			}
+		}
 	}
 };

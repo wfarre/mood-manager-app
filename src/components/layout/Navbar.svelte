@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
+
 	const iconArrow = '/images/icon-dropdown-arrow.svg';
 </script>
 
@@ -7,12 +10,24 @@
 		<img src="/images/logo.svg" alt="" />
 	</div>
 
-	<button class="btn">
-		<div class="avatar">
-			<img src="/images/avatar-lisa.jpg" alt="" />
-		</div>
-		<img src={iconArrow} alt="" />
-	</button>
+	<form
+		action="?/logout"
+		method="POST"
+		use:enhance={() => {
+			return ({ update, result }) => {
+				if (result.type === 'success') {
+					goto('/login');
+				}
+			};
+		}}
+	>
+		<button class="btn" type="submit">
+			<div class="avatar">
+				<img src="/images/avatar-lisa.jpg" alt="" />
+			</div>
+			<img src={iconArrow} alt="" />
+		</button>
+	</form>
 </nav>
 
 <style>
