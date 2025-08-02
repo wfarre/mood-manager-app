@@ -8,29 +8,20 @@ export const load = async ({ cookies }) => {
 };
 
 export const actions = {
-	login: async ({ request, cookies }) => {
+	signup: async ({ request, cookies }) => {
 		const formData = await request.formData();
+		const name = 'Hello';
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 
-		// const token = await login({ email, password });
-
-		// if(token){
-		// 	cookies.set('moodTrackerToken', token, {
-		// 		path: '/',
-		// 		httpOnly: true,
-		// 		sameSite: 'strict'
-		// 	});
-		// }
-
 		try {
-			const response = await fetch('http://localhost:8000/api/login', {
+			const response = await fetch('http://localhost:8000/api/register', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					Accept: 'application/json'
 				},
-				body: JSON.stringify({ email, password })
+				body: JSON.stringify({ name, email, password })
 			});
 
 			if (response.ok) {

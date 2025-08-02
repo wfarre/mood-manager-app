@@ -13,7 +13,7 @@
 	linkText="Log in"
 	linkUrl="/login"
 >
-	<LoginForm action="/signup" />
+	<LoginForm action="?/signup" />
 </FormWrapper>
 
 <style>

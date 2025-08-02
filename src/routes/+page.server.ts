@@ -1,10 +1,52 @@
+import { create, fetchData } from '$lib/actions';
+import type { MoodApi } from '$lib/models/Mood';
 import { error, redirect } from '@sveltejs/kit';
 
 export const load = async ({ fetch, cookies }) => {
-	if (!cookies.get('moodTrackerToken')) {
+	const token: undefined | string = cookies.get('moodTrackerToken');
+	if (!token) {
 		redirect(307, '/login');
 	}
-	const fetchData = async () => {
+
+	console.log(token);
+
+	const fetchUser = async () => {
+		return await fetch('http://127.0.0.1:8000/api/user', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: `Bearer ${cookies.get('moodTrackerToken')}`
+			}
+		})
+			.then((res) => {
+				if (res.status === 401) {
+					cookies.delete('moodTrackerToken', { path: '/' });
+					throw error(401, 'Unauthorized');
+				}
+				if (!res.ok) {
+					throw new Error('Something went wrong');
+				}
+				return res.json();
+			})
+			.then((data) => {
+				return data;
+			})
+			.catch((err) => {
+				console.log('hello');
+
+				if (err.status === 401) {
+					redirect(307, '/login');
+				}
+				console.log(err);
+			});
+	};
+
+	const user = await fetchUser();
+
+	console.log(user);
+
+	const fetchDataJson = async () => {
 		return await fetch('/data/data.json')
 			.then((res) => res.json())
 			.then((fetchedData) => {
@@ -13,26 +55,21 @@ export const load = async ({ fetch, cookies }) => {
 			.catch((err) => console.log(err));
 	};
 
-	const getMoodData = async () => {
-		return await fetch('http://127.0.0.1:8000/api/moods')
-			.then((res) => res.json())
-			.then((fetchedData) => {
-				return fetchedData;
-			})
-			.catch((err) => console.log(err));
-	};
-
-	const data = await fetchData();
+	const data = await fetchDataJson();
 
 	return {
-		moodEntries: await getMoodData(),
+		moodEntries: await fetchData('/moods', cookies.get('moodTrackerToken') as string),
 		// moodEntries: data.moodEntries,
 		moodQuotes: data.moodQuotes
 	};
 };
 
 export const actions = {
-	create: async ({ request }) => {
+	create: async ({ request, cookies }) => {
+		const token: undefined | string = cookies.get('moodTrackerToken');
+		if (!token) {
+			redirect(307, '/login');
+		}
 		const data = await request.formData();
 
 		console.log(data.get('formData'));
@@ -45,23 +82,9 @@ export const actions = {
 			feelings: formData.feelings,
 			journal_entry: formData.journalEntry,
 			sleep_hours: formData.sleepHours
-		};
+		} as MoodApi;
 
-		console.log(newMood);
-
-		return await fetch('http://127.0.0.1:8000/api/moods', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json'
-			},
-			body: JSON.stringify(newMood)
-		})
-			.then((res) => res.json())
-			.then((fetchedData) => {
-				console.log(fetchedData);
-			})
-			.catch((err) => console.log(err));
+		return await create('/moods', newMood, token);
 	},
 
 	logout: async ({ cookies }) => {
