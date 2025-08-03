@@ -1,67 +1,79 @@
-import { error } from '@sveltejs/kit';
+import { error, fail, type ActionFailure } from '@sveltejs/kit';
 import type { Credentials } from './types';
 import type { MoodApi } from './models/Mood';
 
-export const login = async (credentials: Credentials) => {
+const returnError = (err: unknown | { status: number; body: { message: string } }) => {
+	if ((err as { status: number; body: { message: string } }).status) {
+		return fail((err as { status: number; body: { message: string } }).status, {
+			message: (err as { status: number; body: { message: string } }).body.message
+		});
+	} else {
+		error(500, 'Something went wrong');
+	}
+};
+
+const header = (token?: string) => ({
+	'Content-Type': 'application/json',
+	Accept: 'application/json',
+	Authorization: token ? `Bearer ${token}` : ''
+});
+
+export const login = async (
+	credentials: Credentials,
+	path: string = 'login'
+): Promise<{ token: string } | ActionFailure<{ message: string }>> => {
 	try {
-		const response = await fetch('http://localhost:8000/api/login', {
+		const response = await fetch(`http://localhost:8000/api/${path}`, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json'
-			},
+			headers: header(),
 			body: JSON.stringify(credentials)
 		});
 
-		if (response.ok) {
-			const data = await response.json();
-			return data.token;
-		} else {
+		if (!response.ok) {
 			const json = await response.json();
 			throw error(response.status, json.message);
 		}
-	} catch (err) {
-		console.log(err);
 
-		if ((err as { status: number; body: { message: string } }).status) {
-			error((err as { status: number; message: string }).status, {
-				message: (err as { status: number; body: { message: string } }).body.message
-			});
-		} else {
-			error(500, 'Something went wrong');
-		}
+		const data = await response.json();
+		return { token: data.token };
+	} catch (err) {
+		return returnError(err);
 	}
 };
 
 export const fetchData = async (path: string, token: string) => {
-	return await fetch('http://localhost:8000/api' + path, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			Authorization: `Bearer ${token}`
+	try {
+		const res = await fetch('http://localhost:8000/api' + path, {
+			method: 'GET',
+			headers: header(token)
+		});
+
+		if (!res.ok) {
+			const json = await res.json();
+			throw error(res.status, json.message);
 		}
-	})
-		.then((res) => res.json())
-		.then((fetchedData) => {
-			return fetchedData;
-		})
-		.catch((err) => console.log(err));
+
+		return await res.json();
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 export const create = async (path: string, newMood: MoodApi, token: string) => {
-	return await fetch('http://127.0.0.1:8000/api' + path, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			Authorization: `Bearer ${token}`
-		},
-		body: JSON.stringify(newMood)
-	})
-		.then((res) => res.json())
-		.then((fetchedData) => {
-			console.log(fetchedData);
-		})
-		.catch((err) => console.log(err));
+	try {
+		const res = await fetch('http://localhost:8000/api' + path, {
+			method: 'POST',
+			headers: header(token),
+			body: JSON.stringify(newMood)
+		});
+
+		if (!res.ok) {
+			const json = await res.json();
+			throw error(res.status, json.message);
+		}
+
+		return await res.json();
+	} catch (err) {
+		return returnError(err);
+	}
 };

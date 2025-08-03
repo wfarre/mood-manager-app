@@ -1,6 +1,6 @@
 import { create, fetchData } from '$lib/actions';
 import type { MoodApi } from '$lib/models/Mood';
-import { error, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ fetch, cookies }) => {
 	const token: undefined | string = cookies.get('moodTrackerToken');
@@ -33,12 +33,9 @@ export const load = async ({ fetch, cookies }) => {
 				return data;
 			})
 			.catch((err) => {
-				console.log('hello');
-
 				if (err.status === 401) {
 					redirect(307, '/login');
 				}
-				console.log(err);
 			});
 	};
 
@@ -68,7 +65,8 @@ export const actions = {
 	create: async ({ request, cookies }) => {
 		const token: undefined | string = cookies.get('moodTrackerToken');
 		if (!token) {
-			redirect(307, '/login');
+			return;
+			// throw redirect(307, '/login');
 		}
 		const data = await request.formData();
 
@@ -101,12 +99,6 @@ export const actions = {
 			console.log(response);
 
 			if (response.ok) {
-				const data = await response.json();
-				cookies.set('moodTrackerToken', data.token, {
-					path: '/',
-					httpOnly: true,
-					sameSite: 'strict'
-				});
 				cookies.delete('moodTrackerToken', { path: '/' });
 			} else {
 				const json = await response.json();
@@ -116,7 +108,7 @@ export const actions = {
 			console.log(err);
 
 			if ((err as { status: number; body: { message: string } }).status) {
-				error((err as { status: number; message: string }).status, {
+				return fail((err as { status: number; message: string }).status, {
 					message: (err as { status: number; body: { message: string } }).body.message
 				});
 			} else {

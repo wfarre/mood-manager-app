@@ -117,6 +117,8 @@
 	use:enhance={() => {
 		return async ({ update, result }) => {
 			await update();
+			console.log(result);
+
 			if (result.type === 'success') {
 				resetForm();
 				isFormModalOpen = false;
