@@ -1,5 +1,5 @@
 <script>
-	import LoginForm from '../../components/layout/LoginForm.svelte';
+	import LoginForm from '../../components/forms/LoginForm.svelte';
 	import FormWrapper from '../../components/ui/FormWrapper.svelte';
 </script>
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { redirect } from '@sveltejs/kit';
 	import Button from '../ui/Button.svelte';
 	import InputWithLabel from '../ui/InputWithLabel.svelte';
 	import { goto } from '$app/navigation';

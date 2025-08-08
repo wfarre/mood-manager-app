@@ -9,14 +9,16 @@
 	import CardGraph from '../components/ui/CardGraph.svelte';
 	import type { Mood, MoodApi } from '$lib/models/Mood';
 	import { MoodFactory } from '$lib/factories/MoodFactory';
-	import FormModal from '../components/layout/FormModal.svelte';
 	import Button from '../components/ui/Button.svelte';
 	import type { PageProps } from './$types';
+	import ProfileSettingModalView from '../components/Views/ProfileSettingModalView.svelte';
+	import CreateMoodFormModalView from '../components/Views/CreateMoodFormModalView.svelte';
 
 	let mood: null | Mood[] = $state(null);
 	let moodQuotes = $state([]);
 	let isFormModalOpen = $state(false);
 	let todayMood: undefined | null | Mood = $state(null);
+	let isSettingModalOpen = $state(false);
 
 	console.log(data);
 
@@ -54,7 +56,7 @@
 </script>
 
 {#if isFormModalOpen}
-	<FormModal bind:isFormModalOpen />
+	<CreateMoodFormModalView bind:isFormModalOpen />
 {/if}
 
 <div class="container">
@@ -99,7 +101,15 @@
 	:global(.container > *) {
 		max-width: min(1170px, calc(100vw - 270px));
 		margin: 0 auto;
-		/* padding: 0 135px; */
+	}
+
+	:global(.error-message) {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--color-red-700);
+		font-size: 12px;
+		margin-top: 8px;
 	}
 
 	.header {

@@ -1,6 +1,6 @@
 import { create, fetchData } from '$lib/actions';
 import type { MoodApi } from '$lib/models/Mood';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail, json, redirect } from '@sveltejs/kit';
 
 export const load = async ({ fetch, cookies }) => {
 	const token: undefined | string = cookies.get('moodTrackerToken');
@@ -8,7 +8,7 @@ export const load = async ({ fetch, cookies }) => {
 		redirect(307, '/login');
 	}
 
-	console.log(token);
+	// console.log(token);
 
 	const fetchUser = async () => {
 		return await fetch('http://127.0.0.1:8000/api/user', {
@@ -41,7 +41,7 @@ export const load = async ({ fetch, cookies }) => {
 
 	const user = await fetchUser();
 
-	console.log(user);
+	// console.log(user);
 
 	const fetchDataJson = async () => {
 		return await fetch('/data/data.json')
@@ -54,11 +54,11 @@ export const load = async ({ fetch, cookies }) => {
 
 	const data = await fetchDataJson();
 
-	return {
-		moodEntries: await fetchData('/moods', cookies.get('moodTrackerToken') as string),
-		// moodEntries: data.moodEntries,
-		moodQuotes: data.moodQuotes
-	};
+	// return {
+	// 	moodEntries: await fetchData('/moods', cookies.get('moodTrackerToken') as string),
+	// 	// moodEntries: data.moodEntries,
+	// 	moodQuotes: data.moodQuotes
+	// };
 };
 
 export const actions = {
@@ -115,5 +115,77 @@ export const actions = {
 				error(500, 'Something went wrong');
 			}
 		}
+	},
+	updateProfile: async ({ request, cookies }) => {
+		console.log('update-profile');
+		const formData = await request.formData();
+		console.log(formData);
+
+		const file = formData.get('file-upload') as File;
+
+		// const { dataUrl } = await fileToBase64(file);
+
+		// console.log(dataUrl);
+
+		try {
+			const res = await fetch('http://localhost:8000/api/user/7', {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json',
+					Authorization: `Bearer ${cookies.get('moodTrackerToken')}`
+				},
+				body: JSON.stringify({ name: formData.get('name') })
+			});
+
+			if (!res.ok) {
+				const json = await res.json();
+				throw error(res.status, json.message);
+			}
+			return await res.json();
+		} catch (err) {
+			console.log(err);
+		}
 	}
+};
+
+// function imageToBase64(imagePath) {
+// 	try {
+// 		// Read the image file as a binary buffer
+// 		const imageData = fs.readFileSync(imagePath);
+
+// 		// Convert the binary buffer to a Base64 string
+// 		const base64Image = Buffer.from(imageData).toString('base64');
+
+// 		// Optionally, add the data URI prefix for web usage
+// 		// Determine image type from file extension
+// 		const ext = imagePath.split('.').pop();
+// 		const dataUri = `data:image/${ext};base64,${base64Image}`;
+
+// 		return dataUri; // Or just base64Image if the data URI prefix isn't needed
+// 	} catch (error) {
+// 		console.error('Error converting image to Base64:', error);
+// 		return null;
+// 	}
+// }
+
+const fileToBase64 = async (file: File) => {
+	if (!file) {
+		return json({ error: 'No file uploaded' }, { status: 400 });
+	}
+
+	// Read the file into a buffer
+	const arrayBuffer = await file.arrayBuffer();
+	const buffer = Buffer.from(arrayBuffer);
+
+	// Convert to base64
+	const base64 = buffer.toString('base64');
+	const mimeType = file.type;
+
+	// Optional: full Data URL
+	const dataUrl = `data:${mimeType};base64,${base64}`;
+
+	// console.log(base64);
+
+	return { base64, dataUrl };
 };

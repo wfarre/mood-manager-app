@@ -4,9 +4,9 @@
 	import type { ChangeEventHandler } from 'svelte/elements';
 	import FormStepper from '../ui/FormStepper.svelte';
 	import MoodFormFieldset from '../ui/MoodFormFieldset.svelte';
-	import ListView from './ListView.svelte';
+	import ListView from '../layout/ListView.svelte';
 	import Button from '../ui/Button.svelte';
-	import RadioItem from '../ui/RadioItem.svelte';
+	import RadioItem from '../ui/InputRadio.svelte';
 	import TagItem from '../ui/TagItem.svelte';
 	import { feelingsList, moodsSelection, sleepHours } from '$lib/constants';
 
