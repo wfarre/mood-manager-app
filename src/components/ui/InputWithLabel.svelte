@@ -4,14 +4,15 @@
 		label: string;
 		placeholder?: string;
 		type?: 'email' | 'password' | 'text';
+		value: string;
 	}
 
-	let { id, label, placeholder = '', type = 'text' }: Props = $props();
+	let { id, label, placeholder = '', type = 'text', value }: Props = $props();
 </script>
 
 <label class="form-with-label" for={id}>
 	{label}
-	<input {type} name={id} {id} {placeholder} />
+	<input {type} name={id} {id} {placeholder} {value} />
 </label>
 
 <style>

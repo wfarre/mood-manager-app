@@ -1,13 +1,29 @@
 <script lang="ts">
 	interface Props {
 		isError: boolean;
+		currentImage?: string | null | undefined;
 	}
 
-	let { isError }: Props = $props();
+	let { isError, currentImage = null }: Props = $props();
+
+	const updloadImage = (e: Event) => {
+		const inputFile = e.target as HTMLInputElement;
+		const file = inputFile.files?.[0];
+		if (!file) return;
+		currentImage = URL.createObjectURL(file);
+	};
 </script>
 
 <div class="avatar-upload-wrapper">
-	<img src="/images/avatar-placeholder.svg" alt="" />
+	<div class="img-wrapper">
+		<img
+			height="64"
+			width="64"
+			src={`${!currentImage ? '/images/avatar-placeholder.svg' : currentImage}`}
+			alt="profile"
+		/>
+	</div>
+
 	<div class="avatar-upload">
 		<p class="avatar-upload__title">Upload Image</p>
 		<span class="avatar-upload__subtitle">Max 250KB, PNG or JPEG</span>
@@ -19,7 +35,14 @@
 				Unsupported file type. Please upload a PNG or JPEG
 			</span>
 		{/if}
-		<input name="file-upload" id="file-upload" type="file" hidden accept="image/*" />
+		<input
+			onchange={updloadImage}
+			name="file-upload"
+			id="file-upload"
+			type="file"
+			hidden
+			accept="image/*"
+		/>
 	</div>
 </div>
 
@@ -56,5 +79,22 @@
 		padding: 8px 16px;
 		cursor: pointer;
 		font-size: 15px;
+	}
+
+	.img-wrapper {
+		position: relative;
+		height: 64px;
+		width: 64px;
+		overflow: hidden;
+		border-radius: 100%;
+	}
+
+	.img-wrapper img {
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+		object-fit: cover;
 	}
 </style>

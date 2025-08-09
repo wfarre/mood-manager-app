@@ -1,14 +1,12 @@
 import { create, fetchData } from '$lib/actions';
 import type { MoodApi } from '$lib/models/Mood';
-import { error, fail, json, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ fetch, cookies }) => {
 	const token: undefined | string = cookies.get('moodTrackerToken');
 	if (!token) {
 		redirect(307, '/login');
 	}
-
-	// console.log(token);
 
 	const fetchUser = async () => {
 		return await fetch('http://127.0.0.1:8000/api/user', {
@@ -22,6 +20,7 @@ export const load = async ({ fetch, cookies }) => {
 			.then((res) => {
 				if (res.status === 401) {
 					cookies.delete('moodTrackerToken', { path: '/' });
+					cookies.delete('moodCurrentUserId', { path: '/' });
 					throw error(401, 'Unauthorized');
 				}
 				if (!res.ok) {
@@ -30,6 +29,7 @@ export const load = async ({ fetch, cookies }) => {
 				return res.json();
 			})
 			.then((data) => {
+				cookies.set('moodCurrentUser', data, { path: '/' });
 				return data;
 			})
 			.catch((err) => {
@@ -38,10 +38,6 @@ export const load = async ({ fetch, cookies }) => {
 				}
 			});
 	};
-
-	const user = await fetchUser();
-
-	// console.log(user);
 
 	const fetchDataJson = async () => {
 		return await fetch('/data/data.json')
@@ -54,11 +50,12 @@ export const load = async ({ fetch, cookies }) => {
 
 	const data = await fetchDataJson();
 
-	// return {
-	// 	moodEntries: await fetchData('/moods', cookies.get('moodTrackerToken') as string),
-	// 	// moodEntries: data.moodEntries,
-	// 	moodQuotes: data.moodQuotes
-	// };
+	return {
+		moodEntries: await fetchData('/moods', cookies.get('moodTrackerToken') as string),
+		// moodEntries: data.moodEntries,
+		moodQuotes: data.moodQuotes,
+		user: await fetchUser()
+	};
 };
 
 export const actions = {
@@ -123,20 +120,21 @@ export const actions = {
 
 		const file = formData.get('file-upload') as File;
 
-		// const { dataUrl } = await fileToBase64(file);
-
-		// console.log(dataUrl);
+		const dataUrl = file.size !== 0 ? await fileToBase64(file) : undefined;
 
 		try {
-			const res = await fetch('http://localhost:8000/api/user/7', {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json',
-					Authorization: `Bearer ${cookies.get('moodTrackerToken')}`
-				},
-				body: JSON.stringify({ name: formData.get('name') })
-			});
+			const res = await fetch(
+				`http://localhost:8000/api/user/${cookies.get('moodCurrentUserId')}`,
+				{
+					method: 'PATCH',
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
+						Authorization: `Bearer ${cookies.get('moodTrackerToken')}`
+					},
+					body: JSON.stringify({ name: formData.get('name'), avatar: dataUrl })
+				}
+			);
 
 			if (!res.ok) {
 				const json = await res.json();
@@ -149,29 +147,9 @@ export const actions = {
 	}
 };
 
-// function imageToBase64(imagePath) {
-// 	try {
-// 		// Read the image file as a binary buffer
-// 		const imageData = fs.readFileSync(imagePath);
-
-// 		// Convert the binary buffer to a Base64 string
-// 		const base64Image = Buffer.from(imageData).toString('base64');
-
-// 		// Optionally, add the data URI prefix for web usage
-// 		// Determine image type from file extension
-// 		const ext = imagePath.split('.').pop();
-// 		const dataUri = `data:image/${ext};base64,${base64Image}`;
-
-// 		return dataUri; // Or just base64Image if the data URI prefix isn't needed
-// 	} catch (error) {
-// 		console.error('Error converting image to Base64:', error);
-// 		return null;
-// 	}
-// }
-
-const fileToBase64 = async (file: File) => {
+const fileToBase64 = async (file: File): Promise<string | Error> => {
 	if (!file) {
-		return json({ error: 'No file uploaded' }, { status: 400 });
+		throw error(400, { message: 'no file upload' });
 	}
 
 	// Read the file into a buffer
@@ -187,5 +165,5 @@ const fileToBase64 = async (file: File) => {
 
 	// console.log(base64);
 
-	return { base64, dataUrl };
+	return dataUrl;
 };

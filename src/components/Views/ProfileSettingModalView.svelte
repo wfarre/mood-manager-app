@@ -3,9 +3,11 @@
 	import Modal from '../layout/Modal.svelte';
 	interface Props {
 		isSettingModalOpen: boolean;
+		picProfile: string;
+		userName: string;
 	}
 
-	let { isSettingModalOpen = $bindable() }: { isSettingModalOpen: boolean } = $props();
+	let { isSettingModalOpen = $bindable(), picProfile, userName }: Props = $props();
 
 	const closeModal = () => {
 		isSettingModalOpen = false;
@@ -17,5 +19,5 @@
 	modalSubtitle="Personalize your account with your name and photo."
 	onCloseModal={closeModal}
 >
-	<SettingForm />
+	<SettingForm {userName} {picProfile} closeModal={() => (isSettingModalOpen = false)} />
 </Modal>

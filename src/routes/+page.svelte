@@ -11,18 +11,14 @@
 	import { MoodFactory } from '$lib/factories/MoodFactory';
 	import Button from '../components/ui/Button.svelte';
 	import type { PageProps } from './$types';
-	import ProfileSettingModalView from '../components/Views/ProfileSettingModalView.svelte';
 	import CreateMoodFormModalView from '../components/Views/CreateMoodFormModalView.svelte';
 
 	let mood: null | Mood[] = $state(null);
+	let user = data.user;
 	let moodQuotes = $state([]);
 	let isFormModalOpen = $state(false);
 	let todayMood: undefined | null | Mood = $state(null);
-	let isSettingModalOpen = $state(false);
 
-	console.log(data);
-
-	// const currenteDate = new Date('2025-04-15T11:00:00Z');
 	const currenteDate = new Date();
 
 	const formattedCurrentDate = currenteDate.toLocaleDateString('en-US', {
@@ -31,8 +27,6 @@
 		month: 'long',
 		day: 'numeric'
 	});
-
-	console.log(formattedCurrentDate);
 
 	const dateWithoutTime = (date: Date): string => date.toISOString().split('T')[0];
 
@@ -62,7 +56,11 @@
 <div class="container">
 	<!-- <pre>{JSON.stringify(mood, null, 2)}</pre> -->
 
-	<Navbar />
+	<Navbar
+		bind:picProfile={data.user.avatar}
+		bind:userName={data.user.name}
+		userEmail={user.email}
+	/>
 	<header class="header">
 		<p class="greetings">Hello, Lisa!</p>
 		<h1 class="title">How are you feeling today?</h1>

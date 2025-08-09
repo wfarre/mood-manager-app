@@ -1,12 +1,23 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import ProfileSettingModalView from '../Views/ProfileSettingModalView.svelte';
+
+	let { picProfile = $bindable(), userName = $bindable(), userEmail } = $props();
 
 	const iconArrow = '/images/icon-dropdown-arrow.svg';
 
 	let isSettingModalOpen = $state(false);
 	let isMenuOpen = $state(false);
+
+	onMount(() => {
+		window?.addEventListener('click', (e: Event) => {
+			if (!(e.target as HTMLElement).closest('.open-menu-btn')) {
+				isMenuOpen = false;
+			}
+		});
+	});
 </script>
 
 <nav class="navbar">
@@ -14,18 +25,18 @@
 		<img src="/images/logo.svg" alt="" />
 	</div>
 
-	<button class="btn" onclick={() => (isMenuOpen = !isMenuOpen)}>
+	<button id="open-btn" class="btn open-menu-btn" onclick={() => (isMenuOpen = !isMenuOpen)}>
 		<div class="avatar">
-			<img src="/images/avatar-lisa.jpg" alt="" />
+			<img src={picProfile} alt="" />
 		</div>
 		<img src={iconArrow} alt="" />
 	</button>
 
 	{#if isMenuOpen}
-		<div class="modal">
+		<div id={'menu-modal'} class="modal">
 			<figure class="user-info">
-				<figcaption class="user-info__name">Lisa Maria</figcaption>
-				<p class="user-info__email">lisa@mail.com</p>
+				<figcaption class="user-info__name">{userName}</figcaption>
+				<p class="user-info__email">{userEmail}</p>
 			</figure>
 			<ul class="settings">
 				<li class="settings__item">
@@ -58,7 +69,7 @@
 </nav>
 
 {#if isSettingModalOpen}
-	<ProfileSettingModalView bind:isSettingModalOpen />
+	<ProfileSettingModalView bind:isSettingModalOpen {picProfile} {userName} />
 {/if}
 
 <style>
