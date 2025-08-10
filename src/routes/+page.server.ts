@@ -29,7 +29,7 @@ export const load = async ({ fetch, cookies }) => {
 				return res.json();
 			})
 			.then((data) => {
-				cookies.set('moodCurrentUser', data, { path: '/' });
+				cookies.set('moodCurrentUserId', data.id, { path: '/' });
 				return data;
 			})
 			.catch((err) => {
@@ -38,6 +38,8 @@ export const load = async ({ fetch, cookies }) => {
 				}
 			});
 	};
+
+	const user = await fetchUser();
 
 	const fetchDataJson = async () => {
 		return await fetch('/data/data.json')
@@ -49,9 +51,13 @@ export const load = async ({ fetch, cookies }) => {
 	};
 
 	const data = await fetchDataJson();
+	const pouet = await fetchData(`/moods/${user.id}`, cookies.get('moodTrackerToken') as string);
+	console.log('puet data');
+
+	console.log(pouet);
 
 	return {
-		moodEntries: await fetchData('/moods', cookies.get('moodTrackerToken') as string),
+		moodEntries: pouet?.data,
 		// moodEntries: data.moodEntries,
 		moodQuotes: data.moodQuotes,
 		user: await fetchUser()
@@ -63,20 +69,17 @@ export const actions = {
 		const token: undefined | string = cookies.get('moodTrackerToken');
 		if (!token) {
 			return;
-			// throw redirect(307, '/login');
 		}
 		const data = await request.formData();
-
-		console.log(data.get('formData'));
 		const formDataString = data.get('formData');
 		const formData = JSON.parse(formDataString as string);
-		console.log(formData);
 
 		const newMood = {
 			mood: formData.mood,
 			feelings: formData.feelings,
 			journal_entry: formData.journalEntry,
-			sleep_hours: formData.sleepHours
+			sleep_hours: formData.sleepHours,
+			user_id: cookies.get('moodCurrentUserId')
 		} as MoodApi;
 
 		return await create('/moods', newMood, token);

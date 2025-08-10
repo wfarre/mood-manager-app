@@ -76,4 +76,5 @@ export interface MoodApi {
 	feelings: string[];
 	journal_entry: string;
 	sleep_hours: number;
+	user_id?: number;
 }
