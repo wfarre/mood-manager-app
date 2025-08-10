@@ -8,6 +8,7 @@
 
 <style>
 	.container {
+		height: fit-content;
 		min-height: 100vh;
 		min-width: 100vw;
 		background-color: var(--color-blue-100);

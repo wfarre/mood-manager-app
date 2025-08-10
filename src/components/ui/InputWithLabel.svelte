@@ -4,7 +4,7 @@
 		label: string;
 		placeholder?: string;
 		type?: 'email' | 'password' | 'text';
-		value: string;
+		value?: string;
 	}
 
 	let { id, label, placeholder = '', type = 'text', value }: Props = $props();

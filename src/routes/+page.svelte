@@ -65,7 +65,6 @@
 		<p class="greetings">Hello, Lisa!</p>
 		<h1 class="title">How are you feeling today?</h1>
 		<p class="date">{formattedCurrentDate}</p>
-		<!-- <p class="date">Wednesday, April 16th, 2025</p> -->
 
 		{#if !todayMood}
 			<Button onclick={handleOpenModal}>Log today's Mood</Button>
@@ -97,7 +96,7 @@
 	}
 
 	:global(.container > *) {
-		max-width: min(1170px, calc(100vw - 270px));
+		max-width: min(1170px, calc(100vw - (270 / 1440) * 100vw));
 		margin: 0 auto;
 	}
 
@@ -154,6 +153,18 @@
 		column-gap: 32px;
 		height: 925px;
 		width: 100%;
+	}
+
+	@media all and (max-width: 800px) {
+		.grid {
+			/* grid-template-columns: 1fr;
+			grid-template-rows: auto; */
+			display: flex;
+			flex-direction: column;
+			height: auto;
+			grid-template-rows: auto;
+			gap: 32px;
+		}
 	}
 
 	.grid--no-mood {

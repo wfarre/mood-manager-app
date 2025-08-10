@@ -143,6 +143,17 @@
 		height: 100%;
 	}
 
+	@media all and (max-width: 800px) {
+		.wrapper {
+			height: auto;
+		}
+
+		.graph {
+			position: relative;
+			min-height: 312px;
+		}
+	}
+
 	.card--5 {
 		grid-column-start: 5;
 		grid-column-end: 13;

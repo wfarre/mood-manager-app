@@ -64,8 +64,8 @@
 
 	.card--mood .img-wrapper {
 		position: absolute;
-		height: 320px;
-		width: 320px;
+		height: min(calc((320 / 1440) * 100vw), 320px);
+		width: min(calc((320 / 1440) * 100vw), 320px);
 		top: 50px;
 		right: 40px;
 	}
@@ -84,5 +84,8 @@
 		grid-column-end: 8;
 		grid-row: 1 / 4;
 		overflow: hidden;
+	}
+
+	@media all and (max-width: 450px) {
 	}
 </style>
